@@ -1,4 +1,4 @@
-input_1 = """Card   1: 75 68 35 36 86 83 30 11 14 59 | 86 25 63 57 59 91 68 14 72 32 36 74 66 44 30 28 11 35 75 34 55 83 69 56 38
+day4_input = """Card   1: 75 68 35 36 86 83 30 11 14 59 | 86 25 63 57 59 91 68 14 72 32 36 74 66 44 30 28 11 35 75 34 55 83 69 56 38
 Card   2: 49 62 66 89 53 16 59 19 58 99 | 99 29 21 59 53 66  1 77 15 92 98 23  9 49 75  4 16 12 62 89 58 82 19 60 14
 Card   3: 37 77  5 90 41 15 46 27 38 53 | 47 27 41 90 77 53 65 50 69 72 37 91  9 31 67 11 46 56 85 49 15 20 40  5 38
 Card   4: 97 24 29 70 37 95 83 78 66 19 | 24 44 21 29 39 51 78 79 66 97 19 88 89 35 83 95 84 70  6 34 62 32 37 72 80
@@ -222,8 +222,6 @@ Card 221: 30 16 95 71 10 63 36  2 57 48 | 25 84 18  8 68 47 58  5  4 33 40 99 70
 Card 222: 60 34 77 64 92 54 58 78 33  1 | 20 85  7 17  2 66 70 84 42 29 87 44 43 12 95 15 16 41 79 35 47 75 53 46 36
 Card 223: 76 93 82 50 99 57 92  1 54  3 |  2  4 27  7 98 95 77 65 41 91 97 73 67 72 32 40 64 10 20 70 39 55 81 56 60"""
 
-input_2 = """"""
-
 
 def parse_card_text(text):
     return [int(n) for n in text.split(" ") if n != ""]
@@ -235,7 +233,8 @@ def parse_cards(text):
         card_texts = line.split(":")[1].split("|")
         cards.append({
             "winning_numbers": parse_card_text(card_texts[0]),
-            "my_numbers": parse_card_text(card_texts[1])
+            "my_numbers": parse_card_text(card_texts[1]),
+            "instance_count": 1
         })
     return cards
 
@@ -248,6 +247,14 @@ def calculate_score(card):
     return score
 
 
+def calculate_copies(card):
+    score = 0
+    for number in card["my_numbers"]:
+        if number in card["winning_numbers"]:
+            score += 1
+    return score
+
+
 def part_1(text):
     cards = parse_cards(text)
     scores = [calculate_score(card) for card in cards]
@@ -255,9 +262,15 @@ def part_1(text):
 
 
 def part_2(text):
-    return 0
+    cards = parse_cards(text)
+    for i in range(0, len(cards)):
+        copies = calculate_copies(cards[i])
+        instance_count = cards[i]["instance_count"]
+        for j in range(i + 1, i + 1 + copies):
+            cards[j]["instance_count"] += instance_count
+    return sum(card["instance_count"] for card in cards)
 
 
 if __name__ == '__main__':
-    print("Part 1: %d" % (part_1(input_1)))
-    print("Part 2: %d" % (part_2(input_2)))
+    print("Part 1: %d" % (part_1(day4_input)))
+    print("Part 2: %d" % (part_2(day4_input)))
